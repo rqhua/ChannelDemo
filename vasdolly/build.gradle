@@ -1,0 +1,74 @@
+apply plugin: 'com.android.application'
+apply plugin: 'channel'
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.rqhua.demo.vasdolly"
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("../demokey.jks")
+            storePassword "demokey"
+            keyAlias "demokey"
+            keyPassword "demokey"
+            v1SigningEnabled true
+            v2SigningEnabled false
+        }
+
+        debug {
+            storeFile file("../demokey.jks")
+            storePassword "demokey"
+            keyAlias "demokey"
+            keyPassword "demokey"
+            v1SigningEnabled true
+            v2SigningEnabled false
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+    }
+}
+channel{
+    //指定渠道文件
+    channelFile = file("../channel.txt")
+    //多渠道包的输出目录，默认为new File(project.buildDir,"channel")
+    baseOutputDir = new File(project.buildDir,"channel")
+    //多渠道包的命名规则，默认为：${appName}-${versionName}-${versionCode}-${flavorName}-${buildType}
+    apkNameFormat ='${appName}-${versionName}-${versionCode}-${flavorName}-${buildType}'
+    //快速模式：生成渠道包时不进行校验（速度可以提升10倍以上）
+    isFastMode = false
+}
+/*rebuildChannel {
+    baseDebugApk = new File(project.projectDir, "baseApk/v1-base-debug.apk")
+    baseReleaseApk = new File(project.projectDir, "baseApk/v2-base-debug.apk")
+    //isFastMode = true
+}*/
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.android.support:appcompat-v7:26.0.0-beta1'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:0.5'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:2.2.2'
+    api 'com.leon.channel:helper:1.1.7'
+}

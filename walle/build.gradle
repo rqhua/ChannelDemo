@@ -1,0 +1,81 @@
+apply plugin: 'com.android.application'
+apply plugin: 'walle'
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.rqhua.demo.walle"
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("../demokey.jks")
+            storePassword "demokey"
+            keyAlias "demokey"
+            keyPassword "demokey"
+        }
+
+        debug {
+            storeFile file("../demokey.jks")
+            storePassword "demokey"
+            keyAlias "demokey"
+            keyPassword "demokey"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+    }
+}
+
+/*
+    配置项具体解释：
+    apkOutputFolder：指定渠道包的输出路径， 默认值为new File("${project.buildDir}/outputs/apk")
+    apkFileNameFormat：定制渠道包的APK的文件名称, 默认值为'${appName}-${buildType}-${channel}.apk'
+    可使用以下变量:
+
+     projectName - 项目名字
+     appName - App模块名字
+     packageName - applicationId (App包名packageName)
+     buildType - buildType (release/debug等)
+     channel - channel名称 (对应渠道打包中的渠道名字)
+     versionName - versionName (显示用的版本号)
+     versionCode - versionCode (内部版本号)
+     buildTime - buildTime (编译构建日期时间)
+     fileSHA1 - fileSHA1 (最终APK文件的SHA1哈希值)
+     flavorName - 编译构建 productFlavors 名*/
+walle {
+    apkOutputFolder = new File("${project.buildDir}/outputs/channels")
+    apkFileNameFormat = '${appName}-v${versionName}-${versionCode}-${channel}-${buildType}.apk'
+    //configFile与channelFile两者必须存在一个，否则无法生成渠道包。两者都存在时优先执行configFile
+    channelFile = new File("${project.getProjectDir()}/channel.txt")
+    //configFile = new File("${project.getProjectDir()}/config.json")
+}
+
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.android.support:appcompat-v7:26.0.0-beta1'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:0.5'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:2.2.2'
+    compile 'com.meituan.android.walle:library:1.1.6'
+}
